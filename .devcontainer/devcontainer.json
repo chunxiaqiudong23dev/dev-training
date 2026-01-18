@@ -1,0 +1,14 @@
+{
+  "name": "dev-training-env",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+        "extensions": [
+          "vscjava.vscode-java-pack",
+          "MS-CEINTL.vscode-language-pack-ja"
+        ] 
+    }
+  }
+}
