@@ -1,0 +1,44 @@
+FROM amazonlinux:2023
+
+# パッケージインストール
+RUN dnf update && dnf install -y httpd tar gzip sudo wget java-17-amazon-corretto glibc-langpack-ja
+RUN dnf install -y maven postgresql17
+
+# JST化、日本語化、その他
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+ENV LANG="ja_JP.UTF-8"
+
+# tomcatユーザー作成
+RUN sudo useradd -r -s /sbin/nologin tomcat
+RUN sudo useradd -r -s /sbin/nologin mysql
+
+# tomcatダウンロード
+RUN wget https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.15/bin/apache-tomcat-11.0.15.tar.gz
+RUN tar -zxvf apache-tomcat-11.0.15.tar.gz
+
+# tomcat移動＋シンボリックリンク作成
+RUN sudo mv apache-tomcat-11.0.15 /usr/local/src/
+RUN sudo ln -s /usr/local/src/apache-tomcat-11.0.15 /usr/local/src/tomcat
+
+# tomcat権限設定
+RUN sudo chown -R tomcat:tomcat /usr/local/src/apache-tomcat-11.0.15
+RUN sudo chown -R tomcat:tomcat /usr/local/src/tomcat 
+
+# tomcat 設定ファイルコピー
+# ADD server.xml /usr/local/src/tomcat/conf/server.xml
+
+# HTTPコンフィグファイルコピー
+# ADD httpd.conf /etc/httpd/conf/httpd.conf
+
+# warファイル配置
+# ADD webapp2.war /usr/local/src/tomcat/webapps/webapp2.war
+
+# コンテナ起動時シェルコピー
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+
+# コンテナログイン時のディレクトリ
+WORKDIR /workspace
+
+# コンテナ起動時シェル 実行
+CMD ["/start.sh"]

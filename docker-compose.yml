@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: ./docker/app
+      dockerfile: dockerfile_app
+    volumes:
+      - .:/workspace
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
